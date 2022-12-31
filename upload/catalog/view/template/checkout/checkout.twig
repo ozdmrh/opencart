@@ -23,11 +23,85 @@
           </div>
         {% endif %}
         <div class="col">
+          {#
           {% if shipping_method %}
             <div id="checkout-shipping-method" class="mb-3">{{ shipping_method }}</div>
           {% endif %}
           <div id="checkout-payment-method" class="mb-4">{{ payment_method }}</div>
+          #}
           <div id="checkout-confirm">{{ confirm }}</div>
+
+          <div id="smart-button-container" style="display: none;">
+              <div style="text-align: center;">
+                <div id="paypal-button-container"></div>
+              </div>
+          </div>
+          <script src="https://www.paypal.com/sdk/js?client-id=AWqHxPzzhXNTDt7KV7GK6aKMXtoHmHtsumxHEslWJPSza-mGGWyf4cVple_yFVyRy9OXx_ZBwBnBxRCz&enable-funding=venmo&currency=AUD" data-sdk-integration-source="button-factory"></script>
+          <script>
+            function initPayPalButton() {
+
+              paypal.Buttons({
+                style: {
+                  shape: 'rect',
+                  color: 'gold',
+                  layout: 'vertical',
+                  label: 'paypal',
+                  
+                },
+
+                createOrder: function(data, actions) {
+                  return actions.order.create({
+                    purchase_units: [{"amount":{"currency_code":"AUD","value": parseFloat($("#total-payment").text().substring(1))}}]
+                  });
+                },
+
+                onApprove: function(data, actions) {
+                  return actions.order.capture().then(function(orderData) {
+                    
+                    // Full available details
+                    console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+
+                    // Show a success message within this page, e.g.
+                    //const element = document.getElementById('paypal-button-container');
+                    //element.innerHTML = '';
+                    //element.innerHTML = '<h3>Thank you for your payment!</h3>';
+
+                    // Or go to another URL:  actions.redirect('thank_you.html');
+
+                    chain.attach(function () {
+                      var element = this;
+                      $.ajax({
+                          url: 'index.php?route=extension/opencart/payment/cod.confirm&language=en-gb',
+                          dataType: 'json',
+                          beforeSend: function () {
+                          },
+                          complete: function () {                            
+                          },
+                          success: function (json) {
+                              if (json['error']) {
+                                  $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                              }
+
+                              if (json['redirect']) {
+                                  location = json['redirect'];
+                              }
+                          },
+                          error: function (xhr, ajaxOptions, thrownError) {
+                              console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                          }
+                      });
+                    });
+                    
+                  });
+                },
+
+                onError: function(err) {
+                  console.log(err);
+                }
+              }).render('#paypal-button-container');
+            }
+            initPayPalButton();
+          </script>
         </div>
       </div>
     </div>
@@ -35,4 +109,129 @@
   </div>
   {{ column_right }}
 </div>
+<script type="text/javascript"><!--
+function saveShippingAndPayment() {
+    var element = this;
+
+    chain.attach(function () {
+        return $.ajax({
+            url: 'index.php?route=checkout/shipping_method.getMethods&language={{ language }}',
+            dataType: 'json',
+            beforeSend: function () {
+            },
+            complete: function () {
+            },
+            success: function (json) {
+                console.log(json);
+
+                if (json['redirect']) {
+                    location = json['redirect'];
+                }
+
+                if (json['error']) {
+                    $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                }
+
+                 chain.attach(function () {
+                    return $.ajax({
+                        url: 'index.php?route=checkout/shipping_method.save&language={{ language }}',
+                        type: 'post',
+                        data: {shipping_method: 'free.free'},
+                        dataType: 'json',
+                        contentType: 'application/x-www-form-urlencoded',
+                        beforeSend: function () {
+                          
+                        },
+                        complete: function () {
+                           
+                        },
+                        success: function (json) {
+                            console.log(json);
+
+                            if (json['redirect']) {
+                                location = json['redirect'];
+                            }
+
+                            if (json['error']) {
+                                $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                            }
+
+                            if (json['success']) {
+                               // $('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+
+                                //$('#button-payment-method').trigger('click');
+                                chain.attach(function () {
+                                    return $.ajax({
+                                        url: 'index.php?route=checkout/payment_method.getMethods&language={{ language }}',
+                                        dataType: 'json',
+                                        beforeSend: function () {
+                                        },
+                                        complete: function () {
+                                        },
+                                        success: function (json) {
+                                            //console.log(json);
+
+                                            if (json['redirect']) {
+                                                location = json['redirect'];
+                                            }
+
+                                            if (json['error']) {
+                                                $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                                            }
+
+                                            chain.attach(function () {
+                                                return $.ajax({
+                                                    url: 'index.php?route=checkout/payment_method.save&language={{ language }}',
+                                                    type: 'post',
+                                                    data: {payment_method: 'cod'},
+                                                    dataType: 'json',
+                                                    contentType: 'application/x-www-form-urlencoded',
+                                                    beforeSend: function () {
+                                                    },
+                                                    complete: function () {
+                                                    },
+                                                    success: function (json) {
+                                                        console.log(json);
+
+                                                        if (json['redirect']) {
+                                                            location = json['redirect'];
+                                                        }
+
+                                                        if (json['error']) {
+                                                            $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                                                        }
+
+                                                        if (json['success']) {
+                                                            //$('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                                                            //$('#checkout-confirm').load('index.php?route=checkout/confirm.confirm&language={{ language }}');
+                                                            $('#smart-button-container').show();
+                                                        }
+                                                    },
+                                                    error: function (xhr, ajaxOptions, thrownError) {
+                                                        console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                                                    }
+                                                });
+                                            });
+                                        },
+                                        error: function (xhr, ajaxOptions, thrownError) {
+                                            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                                        }
+                                    });
+                                });
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                        }
+                    });
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+    });
+
+}
+//--></script>
 {{ footer }}

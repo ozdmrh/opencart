@@ -29,7 +29,7 @@ h6 {
   font-size: 10.2px;
 }
 a {
-  color: #23a1d1;
+  color: #000;
   text-decoration: none;
 }
 a:hover {
@@ -252,7 +252,7 @@ footer a {
 /* menu */
 #menu {
   background-color: #229ac8;
-  background-image: linear-gradient(to bottom, #23a1d1, #1f90bb);
+  background-image: linear-gradient(to bottom, #333, #111);
   background-repeat: repeat-x;
   border: 1px solid #1f90bb;
   border-color: #1f90bb #1f90bb #145e7a;
@@ -277,7 +277,7 @@ footer a {
 }
 #menu .dropdown-inner ul li a:hover {
   color: #ffffff;
-  background-image: linear-gradient(to bottom, #23a1d1, #1f90bb);
+  background-image: linear-gradient(to bottom, #333, #111);
 }
 #menu .dropdown-inner a {
   min-width: 160px;
@@ -302,7 +302,7 @@ footer a {
   text-decoration: none;
   color: #ffffff;
   background-color: #229ac8;
-  background-image: linear-gradient(to bottom, #23a1d1, #1f90bb);
+  background-image: linear-gradient(to bottom, #333, #111);
   background-repeat: repeat-x;
 }
 #menu #category {
@@ -324,6 +324,7 @@ footer a {
   padding: 10px 15px 10px 15px;
   min-height: 15px;
   background-color: transparent;
+  font-weight: bold;
 }
 #menu .navbar-nav > li > a:hover {
   background-color: rgba(0, 0, 0, 0.1);
@@ -446,7 +447,7 @@ footer h5 {
   border-color: #dddddd #dddddd #b3b3b3 #b7b7b7;
 }
 .btn-light:hover, .btn-light:focus, .btn-light:active, .btn-light.active, .btn-light.disabled, .btn-light[disabled] {
-  color: #333;
+  color: #23a1d1;
   background-color: #e6e6e6;
   border-color: #adadad;
   background-position: 0;
@@ -454,12 +455,13 @@ footer h5 {
 .btn-primary {
   color: #ffffff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  background-image: linear-gradient(to bottom, #23a1d1, #1f90bb);
+  background-image: linear-gradient(to bottom, #333, #111);
   background-repeat: repeat-x;
   border-color: #1f90bb #1f90bb #145e7a;
 }
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .btn-primary.disabled, .btn-primary[disabled] {
   background-position: 0;
+  color: #23a1d1;
 }
 .btn-warning {
   color: #ffffff;

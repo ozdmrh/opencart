@@ -198,7 +198,8 @@ $('input[name=\'shipping_existing\']').on('change', function () {
     }
 });
 
-$('#button-shipping-method').trigger('click');
+//$('#button-shipping-method').trigger('click');
+saveShippingAndPayment();
 
 // Existing Shipping Address
 $('#input-shipping-address').on('change', function () {
@@ -226,9 +227,11 @@ $('#input-shipping-address').on('change', function () {
                 }
 
                 if (json['success']) {
-                    $('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                    //$('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
 
-                    $('#button-shipping-method').trigger('click');
+                    //$('#button-shipping-method').trigger('click');
+                    
+                    saveShippingAndPayment();
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -279,7 +282,7 @@ $('#form-shipping-address').on('submit', function (e) {
                 }
 
                 if (json['success']) {
-                    $('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                    //$('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
 
                     var addresses = [];
 
@@ -330,7 +333,9 @@ $('#form-shipping-address').on('submit', function (e) {
 
                     $('#form-shipping-address')[0].reset();
 
-                    $('#button-shipping-method').trigger('click');
+                    //$('#button-shipping-method').trigger('click');
+                    
+                    saveShippingAndPayment();
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -386,4 +391,135 @@ $('#input-shipping-country').on('change', function () {
 });
 
 $('#input-shipping-country').trigger('change');
+
+
+function saveShippingAndPayment() {
+    var element = this;
+
+    chain.attach(function () {
+        return $.ajax({
+            url: 'index.php?route=checkout/shipping_method.getMethods&language={{ language }}',
+            dataType: 'json',
+            beforeSend: function () {
+            },
+            complete: function () {
+            },
+            success: function (json) {
+                console.log(json);
+
+                if (json['redirect']) {
+                    location = json['redirect'];
+                }
+
+                if (json['error']) {
+                    $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                }
+
+                 chain.attach(function () {
+                    return $.ajax({
+                        url: 'index.php?route=checkout/shipping_method.save&language={{ language }}',
+                        type: 'post',
+                        data: {shipping_method: 'free.free'},
+                        dataType: 'json',
+                        contentType: 'application/x-www-form-urlencoded',
+                        beforeSend: function () {
+                          
+                        },
+                        complete: function () {
+                           
+                        },
+                        success: function (json) {
+                            console.log(json);
+
+                            if (json['redirect']) {
+                                location = json['redirect'];
+                            }
+
+                            if (json['error']) {
+                                $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                            }
+
+                            if (json['success']) {
+                               // $('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+
+                                //$('#button-payment-method').trigger('click');
+                                chain.attach(function () {
+                                    return $.ajax({
+                                        url: 'index.php?route=checkout/payment_method.getMethods&language={{ language }}',
+                                        dataType: 'json',
+                                        beforeSend: function () {
+                                        },
+                                        complete: function () {
+                                        },
+                                        success: function (json) {
+                                            //console.log(json);
+
+                                            if (json['redirect']) {
+                                                location = json['redirect'];
+                                            }
+
+                                            if (json['error']) {
+                                                $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                                            }
+
+                                            chain.attach(function () {
+                                                return $.ajax({
+                                                    url: 'index.php?route=checkout/payment_method.save&language={{ language }}',
+                                                    type: 'post',
+                                                    data: {payment_method: 'cod'},
+                                                    dataType: 'json',
+                                                    contentType: 'application/x-www-form-urlencoded',
+                                                    beforeSend: function () {
+                                                    },
+                                                    complete: function () {
+                                                    },
+                                                    success: function (json) {
+                                                        console.log(json);
+
+                                                        if (json['redirect']) {
+                                                            location = json['redirect'];
+                                                        }
+
+                                                        if (json['error']) {
+                                                            $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                                                        }
+
+                                                        if (json['success']) {
+                                                            //$('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                                                            //$('#checkout-confirm').load('index.php?route=checkout/confirm.confirm&language={{ language }}');
+                                                            $('#smart-button-container').show();
+                                                        }
+                                                    },
+                                                    error: function (xhr, ajaxOptions, thrownError) {
+                                                        console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                                                    }
+                                                });
+                                            });
+                                        },
+                                        error: function (xhr, ajaxOptions, thrownError) {
+                                            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                                        }
+                                    });
+                                });
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                        }
+                    });
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+    });
+
+}
+
+//--></script>
+
+
+<script type="text/javascript"><!--
+
 //--></script>

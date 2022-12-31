@@ -161,7 +161,13 @@ class ShippingMethod extends \Opencart\System\Engine\Controller {
 					$json['error'] = $this->language->get('error_shipping_method');
 				}
 			} else {
-				$json['error'] = $this->language->get('error_shipping_method');
+				//$json['error'] = $this->language->get('error_shipping_method');
+				$this->request->post['shipping_method'] = 'free.free';
+				$shipping = explode('.', $this->request->post['shipping_method']);
+
+				if (!isset($shipping[0]) || !isset($shipping[1]) || !isset($this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]])) {
+					$json['error'] = $this->language->get('error_shipping_method');
+				}
 			}
 		}
 

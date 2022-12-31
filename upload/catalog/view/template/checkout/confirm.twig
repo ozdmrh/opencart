@@ -33,16 +33,16 @@
       {% for total in totals %}
         <tr>
           <td class="text-end"><strong>{{ total.title }}</strong></td>
-          <td class="text-end">{{ total.text }}</td>
+          <td id="total-payment" class="text-end">{{ total.text }}</td>
         </tr>
       {% endfor %}
     </tfoot>
   </table>
 </div>
 <div id="checkout-payment">
-  {% if payment %}
+  {#% if payment %}
     {{ payment }}
   {% else %}
     <div class="text-end"><button type="button" class="btn btn-primary" disabled>{{ button_confirm }}</button></div>
-  {% endif %}
+  {% endif %#}
 </div>

@@ -559,9 +559,11 @@ $('#form-register').on('submit', function (e) {
                     }
 
                   {% if shipping_required %}
-                    $('#button-shipping-method').trigger('click');
+                    //$('#button-shipping-method').trigger('click');
+                    saveShippingAndPayment()
                   {% else %}
-                    $('#button-payment-method').trigger('click');
+                    //$('#button-payment-method').trigger('click');
+                    saveShippingAndPayment()
                   {% endif %}
                 }
             },
